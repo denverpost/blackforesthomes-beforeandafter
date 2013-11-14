@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head> 
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+	<title>Before and after Black Forest fire aerial photos - The Denver Post</title> 
+	
+	<style type="text/css">
+		body { margin:0!important; }
+		#mapoverlaytitle h2 { margin:0; font-family:Arial,Helvetica,sans-serif;color:#222;font-size:18px;line-height:18px; }
+		#mapoverlayimage { border: 6px solid #ccc; width: 700px; height: 410px; margin-top:24px;clear:both; }
+		#mapoverlayimage, #container { margin: 0 auto; }	
+		#mapoverlayimage, div#container { text-align: center; font-family: Arial, Helvetica, sans-serif;}	
+	</style>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="./js/jquery.beforeafter-1.4.min.js"></script>
+	<script type="text/javascript" src="./js/jquery.ui.touch-punch.min.js"></script>
+
+	<script type="text/javascript">
+	
+	function openOverlayWindows(overlayTitle, overlayNum, overlayDate) {
+		var newoverlayhtml = '<div id="container">\n\
+		<div><img alt="before" src="./images/' + overlayNum + '-before.jpg" width="700" height="410" /></div> \n\
+		<div><img alt="after" src="./images/' + overlayNum + '-after.jpg" width="700" height="500" /></div> \n\
+		</div>';
+		
+		$('#mapoverlay').css('display', 'block');
+		$('#mapoverlaytitle').html('<h2>' + overlayTitle + '</h2>');
+		$('#mapoverlayimage').html(newoverlayhtml);
+		$('#mapoverlaydate').html('<p>' + overlayDate + '</p>');
+		$('#container').beforeAfter({
+			animateIntro : true,
+				introDelay : 720,
+				introDuration : 500,
+				showFullLinks : false
+		});
+	}
+	
+	function closeOverlayWindows() {
+		$('#mapoverlay').css('display', 'none');
+	}
+	
+	
+	document.write('<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"><\/script>');
+	
+	function drawGoogleLocationMap(gmaplocations) {
+		
+		var mapZoom = null;
+		
+		var map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 14,
+			disableDefaultUI: true,
+			panControl: false,
+			zoomControl: true,
+			mapTypeControl: false,
+			scaleControl: false,
+			streetViewControl: false,
+			overviewMapControl: false,
+			center: new google.maps.LatLng(gmaplocations[0][1], gmaplocations[0][2]),
+			mapTypeId: google.maps.MapTypeId.TERRAIN
+		});
+		
+		var infowindow = new google.maps.InfoWindow({
+			maxWidth: 100
+			});
+	
+		var marker, i;
+	
+		var bounds = new google.maps.LatLngBounds();
+		
+		for (i = 0; i < gmaplocations.length; i++) {
+			var lettercode = String.fromCharCode(65 + i);
+			var image = {
+				url: 'http://maps.google.com/mapfiles/kml/shapes/camera.png',
+				size: new google.maps.Size(64, 64),
+				scaledSize: new google.maps.Size(48, 48),
+				origin: new google.maps.Point(0, 0),
+				anchor: new google.maps.Point(0, 0)
+			};
+			
+			var shape = {
+				coord: [1, 1, 1, 48, 48, 48, 48 , 1],
+				type: 'poly'
+			};
+			
+			marker = new google.maps.Marker({
+				position: new google.maps.LatLng(gmaplocations[i][1], gmaplocations[i][2]),
+				map: map,
+				icon: image,
+				shape: shape,
+				title: gmaplocations[i][0]
+			});
+			
+			bounds.extend(marker.position);
+	
+			google.maps.event.addListener(marker, 'click', (function(marker, i) {
+				return function() {
+					openOverlayWindows(gmaplocations[i][0], gmaplocations[i][3], gmaplocations[i][4]);
+				}
+			})(marker, i));
+			
+			google.maps.event.addListenerOnce(map, 'bounds_changed', function() { 
+				if (mapZoom != map.getZoom()) { 
+					mapZoom = (map.getZoom()); 
+					map.setZoom(mapZoom); 
+				} 
+			});
+		}
+		map.fitBounds(bounds);
+	}
+	</script>
+          
+          
+</head> 
+<body>
+
+	<div id="mapwrapp" style="width:960px;height:580px">
+ 
+ 		<div id="map" style="top:0px; left: 0px; width: 100%; height: 100%;"></div>
+    	
+    	<div id="mapoverlay" style="position:absolute; top:28px; left:60px; width:835px; height:510px; border:1px solid #888; box-shadow: 8px 8px 12px #666; z-index:7869684;background:#fff;display:none;">
+    		
+    		<div id="overlaytop" style="width:100%;height:28px;margin-top:4px;display:block;clear:both;">
+    		
+    			<div id="mapoverlaytitle" style="width:775px;height:20px;margin:10px 4px 4px 24px;float:left;text-align:center;"></div>
+    			
+    			<div id="mapoverlayclosebtn" style="cursor:pointer;display:block;height:20px;width:20px;margin:4px 6px 4px 2px;font-style:bold;font-size:28px;line-height:20px;font-family:Arial,sans-serif;color:#aaa;float:right;">x</div>
+
+    		</div>
+    		
+			<div id="mapoverlayimage"></div>
+			
+			<div id="mapoverlaydate" style="display:block;height:14px;width:835px;margin:6px 4px 4px;font-style:normal;font-size:14px;line-height:14px;font-family:Arial,sans-serif;color:#888;text-align:center;"></div>
+
+    	</div>
+
+    </div>
+    
+    <script type="text/javascript">
+        var maplocations = [
+            ['Edith Wolford Elementary School area',39.022685,-104.700054,'01','June 12, 2013'],
+			['Shadow Lawn',39.021284,-104.696449,'02','June 12, 2013'],
+			['Shoup Road',39.007413,-104.639761,'03','June 12, 2013'],
+			['Black Forest Churches area',39.012882,-104.700483,'04','June 12, 2013'],
+			['Pinery Drive',39.027419,-104.686539,'05','June 12, 2013'],
+			['Sylvan Meadows neighborhood',39.01485,-104.620617,'06','June 12, 2013'],
+			['Wilderness near electric lines',39.02104,-104.617987,'07','June 12, 2013'],
+			['Trappers Pass Trail Neighborhood',39.017467,-104.70061,'08','June 13, 2013'],
+			['Brentwood Drive Neighborhood',39.020217,-104.697329,'09','June 13, 2013'],
+			['Brentwood Drive Neighborhood',39.023568,-104.691106,'10','June 13, 2013']
+			];
+        drawGoogleLocationMap(maplocations);
+	</script>
+
+	<script type="text/javascript">
+		$('#mapoverlayclosebtn').on("click", closeOverlayWindows);
+	</script>
+	
+	
+    </body>
+</html>
